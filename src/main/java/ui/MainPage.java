@@ -7,6 +7,7 @@ import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.How;
 public class MainPage {
 
+    public static final String pageUrl = "https://stellarburgers.nomoreparties.site";
     @FindBy(how = How.CLASS_NAME, using = "AppHeader_header__logo__2D0X2")
     private SelenideElement logo;
     @FindBy(how = How.XPATH, using = ".//button[@class='button_button__33qZ0 button_button_type_primary__1O7Bx button_button_size_large__G21Vg']")
@@ -28,14 +29,14 @@ public class MainPage {
     public void clickIngredientListButton() { this.burgerIngredientsButton.get(2).click(); }
 
     public boolean isBunListDisplayed() {
-        return $(byXpath(".//div[@class='tab_tab__1SPyG tab_tab_type_current__2BEPc pt-4 pr-10 pb-4 pl-10 noselect']/span[text()='Булки']")).isDisplayed();
+        return $(byXpath(".//div[contains(@class, 'tab_tab_type_current__2BEPc')]/span[text()='Булки']")).isDisplayed();
     }
     public boolean isSauceListDisplayed() {
-        return $(byXpath(".//div[@class='tab_tab__1SPyG tab_tab_type_current__2BEPc pt-4 pr-10 pb-4 pl-10 noselect']/span[text()='Соусы']")).isDisplayed();
+        return $(byXpath(".//div[contains(@class, 'tab_tab_type_current__2BEPc')]/span[text()='Соусы']")).isDisplayed();
     }
 
     public boolean isIngredientListDisplayed() {
-        return $(byXpath(".//div[@class='tab_tab__1SPyG tab_tab_type_current__2BEPc pt-4 pr-10 pb-4 pl-10 noselect']/span[text()='Начинки']")).isDisplayed();
+        return $(byXpath(".//div[contains(@class, 'tab_tab_type_current__2BEPc')]/span[text()='Начинки']")).isDisplayed();
     }
 
 

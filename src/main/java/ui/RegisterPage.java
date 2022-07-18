@@ -5,6 +5,7 @@ import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.How;
 public class RegisterPage {
 
+    public static final String pageUrl = "https://stellarburgers.nomoreparties.site/register";
     @FindBy(how = How.CLASS_NAME, using = "Auth_form__3qKeq")
     private SelenideElement registrationForm;
     @FindBy(how = How.XPATH, using = ".//input[@class='text input__textfield text_type_main-default']")

@@ -1,4 +1,6 @@
 package ui;
+import client.UserClient;
+import model.User;
 import org.junit.*;
 import static com.codeborne.selenide.Selenide.*;
 import static org.junit.Assert.assertTrue;
@@ -8,33 +10,41 @@ public class RegisterUserTest {
 
     RegisterPage registerPage;
     LoginPage loginPage;
-
     static Faker faker = new Faker();
-    static String userEmail = faker.internet().emailAddress();
-    static String userPassword = faker.internet().password();
-    static String userName = faker.name().username();
+    UserClient userClient = new UserClient();
+    User user = new User(faker.internet().emailAddress(), faker.internet().password(), faker.name().username());
+    String accessToken;
 
     @Before
     public void openRegisterPage() {
         // open register page
-        this.registerPage = open("https://stellarburgers.nomoreparties.site/register", RegisterPage.class);
+        registerPage = open(RegisterPage.pageUrl, RegisterPage.class);
     }
 
     @Test
     public void checkUserRegistration() {
 
-        this.registerPage.userRegistrationInput(userName, userEmail, userPassword);
-        this.registerPage.clickRegisterButton();
+        registerPage.userRegistrationInput(user.getName(), user.getEmail(), user.getPassword());
+        registerPage.clickRegisterButton();
         // initialize loginPage
-        this.loginPage = page(LoginPage.class);
-        assertTrue("Login page isn't displayed", this.loginPage.isLoginFormIsDisplayed());
+        loginPage = page(LoginPage.class);
+        assertTrue("Login page isn't displayed", loginPage.isLoginFormIsDisplayed());
     }
 
     @Test
     public void checkUserRegistrationIncorrectPassword() {
+        user.setPassword(user.getPassword().substring(0,5));
+        registerPage.userRegistrationInput(user.getName(), user.getEmail(), user.getPassword());
+        registerPage.clickRegisterButton();
+        assertTrue("Incorrect password error message isn't displayed", registerPage.isPasswordErrorMessageDisplayed());
+    }
 
-        this.registerPage.userRegistrationInput(userName, userEmail, userPassword.substring(0,5));
-        this.registerPage.clickRegisterButton();
-        assertTrue("Incorrect password error message isn't displayed", this.registerPage.isPasswordErrorMessageDisplayed());
+    @After
+    public void deleteUser() {
+        if(userClient.loginUser(user).getStatusCode() == 200) {
+            accessToken = userClient.loginUser(user).then().extract().path("accessToken");
+            userClient.deleteUser(accessToken);
+        }
+
     }
 }

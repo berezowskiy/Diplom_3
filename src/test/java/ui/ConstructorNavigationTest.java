@@ -10,20 +10,18 @@ public class ConstructorNavigationTest {
     @Before
     public void openMainPage() {
         // open main page
-        this.mainPage = open("https://stellarburgers.nomoreparties.site", MainPage.class);
+        mainPage = open(MainPage.pageUrl, MainPage.class);
     }
 
     @Test
     public void checkBurgerConstructorNavigation() {
 
-        this.mainPage.clickSauceListButton();
-        assertTrue("Sauces list isn't displayed", this.mainPage.isSauceListDisplayed());
-
-        this.mainPage.clickIngredientListButton();
-        assertTrue("Ingredients list isn't displayed", this.mainPage.isIngredientListDisplayed());
-
-        this.mainPage.clickBunListButton();
-        assertTrue("Sauces list isn't displayed", this.mainPage.isBunListDisplayed());
+        mainPage.clickSauceListButton();
+        assertTrue("Sauces list isn't displayed", mainPage.isSauceListDisplayed());
+        mainPage.clickIngredientListButton();
+        assertTrue("Ingredients list isn't displayed", mainPage.isIngredientListDisplayed());
+        mainPage.clickBunListButton();
+        assertTrue("Sauces list isn't displayed", mainPage.isBunListDisplayed());
 
     }
 

@@ -1,7 +1,11 @@
 package ui;
+import client.UserClient;
+import com.github.javafaker.Faker;
+import model.User;
 import org.junit.*;
 import static com.codeborne.selenide.Selenide.*;
 import static org.junit.Assert.assertTrue;
+import io.restassured.response.Response;
 
 public class LoginUserTest {
 
@@ -9,69 +13,77 @@ public class LoginUserTest {
     LoginPage loginPage;
     RegisterPage registerPage;
     RestorePasswordPage restorePasswordPage;
-    String correctEmail = "qa_diploma@yandex.ru";
-    String correctPassword = "qa12345";
+    UserClient userClient = new UserClient();
+    Response response;
+    String accessToken;
+    static Faker faker = new Faker();
+    User user = new User(faker.internet().emailAddress(), faker.internet().password(), faker.name().username());
 
     @Before
     public void openMainPage() {
         // open main page
-        this.mainPage = open("https://stellarburgers.nomoreparties.site", MainPage.class);
+        mainPage = open(MainPage.pageUrl, MainPage.class);
+        response = userClient.createUser(user);
+        accessToken = response.then().extract().path("accessToken");
     }
 
     @Test
     public void checkUserLoginByEnterAccount() {
 
-        this.mainPage.clickLoginButton();
+        mainPage.clickLoginButton();
         // initialize loginPage
-        this.loginPage = page(LoginPage.class);
-        assertTrue("Login page isn't displayed", this.loginPage.isLoginFormIsDisplayed());
-        this.loginPage.userLoginInput(correctEmail, correctPassword);
-        this.loginPage.clickLoginButton();
-        assertTrue("Main page isn't displayed", this.loginPage.isLoginFormIsDisplayed());
+        loginPage = page(LoginPage.class);
+        assertTrue("Login page isn't displayed", loginPage.isLoginFormIsDisplayed());
+        loginPage.userLoginInput(user.getEmail(), user.getPassword());
+        loginPage.clickLoginButton();
+        assertTrue("Main page isn't displayed", loginPage.isLoginFormIsDisplayed());
     }
 
     @Test
     public void checkUserLoginInAccount() {
 
-        this.mainPage.clickAccountButton();
+        mainPage.clickAccountButton();
         // initialize loginPage
-        this.loginPage = page(LoginPage.class);
-        assertTrue("Login page isn't displayed", this.loginPage.isLoginFormIsDisplayed());
+        loginPage = page(LoginPage.class);
+        assertTrue("Login page isn't displayed", loginPage.isLoginFormIsDisplayed());
         // input account email and password
-        this.loginPage.userLoginInput(correctEmail, correctPassword);
-        this.loginPage.clickLoginButton();
-        assertTrue("Main page isn't displayed", this.loginPage.isLoginFormIsDisplayed());
+        loginPage.userLoginInput(user.getEmail(), user.getPassword());
+        loginPage.clickLoginButton();
+        assertTrue("Main page isn't displayed", loginPage.isLoginFormIsDisplayed());
     }
 
     @Test
     public void checkUserLoginOnRegistrationForm() {
 
-        this.registerPage = open("https://stellarburgers.nomoreparties.site/register", RegisterPage.class);
-        this.registerPage.clickEnterButton();
+        registerPage = open(RegisterPage.pageUrl, RegisterPage.class);
+        registerPage.clickEnterButton();
         // initialize loginPage
-        this.loginPage = page(LoginPage.class);
-        assertTrue("Login page isn't displayed", this.loginPage.isLoginFormIsDisplayed());
+        loginPage = page(LoginPage.class);
+        assertTrue("Login page isn't displayed", loginPage.isLoginFormIsDisplayed());
         // input account email and password
-        this.loginPage.userLoginInput(correctEmail, correctPassword);
-        this.loginPage.clickLoginButton();
-        assertTrue("Main page isn't displayed", this.loginPage.isLoginFormIsDisplayed());
+        loginPage.userLoginInput(user.getEmail(), user.getPassword());
+        loginPage.clickLoginButton();
+        assertTrue("Main page isn't displayed", loginPage.isLoginFormIsDisplayed());
     }
 
     @Test
     public void checkUserLoginOnRestorePasswordPage() {
 
-        this.loginPage = open("https://stellarburgers.nomoreparties.site/login", LoginPage.class);
-        this.loginPage.clickRestorePasswordButton();
-        this.restorePasswordPage = page(RestorePasswordPage.class);
-        assertTrue("Restore page isn't displayed", this.restorePasswordPage.isRestorePasswordFormIsDisplayed());
+        loginPage = open(LoginPage.pageUrl, LoginPage.class);
+        loginPage.clickRestorePasswordButton();
+        restorePasswordPage = page(RestorePasswordPage.class);
+        assertTrue("Restore page isn't displayed", restorePasswordPage.isRestorePasswordFormIsDisplayed());
 
-        this.restorePasswordPage.clickLoginButton();
-        assertTrue("Login page isn't displayed", this.loginPage.isLoginFormIsDisplayed());
+        restorePasswordPage.clickLoginButton();
+        assertTrue("Login page isn't displayed", loginPage.isLoginFormIsDisplayed());
         // input account email and password
-        this.loginPage.userLoginInput(correctEmail, correctPassword);
-        this.loginPage.clickLoginButton();
-        this.mainPage = page(MainPage.class);
-        assertTrue("Main page isn't displayed", this.mainPage.isMainPageLogoDisplayed());
+        loginPage.userLoginInput(user.getEmail(), user.getPassword());
+        loginPage.clickLoginButton();
+        mainPage = page(MainPage.class);
+        assertTrue("Main page isn't displayed", mainPage.isMainPageLogoDisplayed());
 
     }
+
+    @After
+    public void deleteUser() { userClient.deleteUser(accessToken); }
 }

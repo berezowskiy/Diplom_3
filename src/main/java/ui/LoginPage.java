@@ -6,6 +6,7 @@ import org.openqa.selenium.support.How;
 
 public class LoginPage {
 
+    public static final String pageUrl = "https://stellarburgers.nomoreparties.site/login";
     @FindBy(how = How.CLASS_NAME, using = "Auth_login__3hAey")
     private SelenideElement loginForm;
     @FindBy(how = How.XPATH, using = ".//input[@class='text input__textfield text_type_main-default']")
